@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_ai/component/message.dart';
+import 'package:google_generative_ai/google_generative_ai.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
