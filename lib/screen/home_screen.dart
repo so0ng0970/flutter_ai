@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_ai/component/message.dart';
+import 'package:flutter_ai/const/data.dart';
 import 'package:google_generative_ai/google_generative_ai.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -16,7 +17,7 @@ class _HomeScreenState extends State<HomeScreen> {
   final TextEditingController _textController = TextEditingController();
   final FocusNode _textFieldFocus = FocusNode();
   bool _loading = false;
-  static const _apiKey = String.fromEnvironment('API_KEY');
+  static const _apiKey = apiKey;
 
   @override
   void initState() {
@@ -63,72 +64,74 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
 
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Expanded(
-            child: _apiKey.isNotEmpty
-                ? ListView.builder(
-                    controller: _scrollController,
-                    itemBuilder: (context, idx) {
-                      var content = _chat.history.toList()[idx];
-                      var text = content.parts
-                          .whereType<TextPart>()
-                          .map<String>((e) => e.text)
-                          .join('');
-                      return Message(
-                        text: text,
-                        isFromUser: content.role == 'user',
-                      );
-                    },
-                    itemCount: _chat.history.length,
-                  )
-                : ListView(
-                    children: const [
-                      Text('No API key found. Please provide an API Key.'),
-                    ],
-                  ),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(
-              vertical: 25,
-              horizontal: 15,
-            ),
-            child: Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    autofocus: true,
-                    focusNode: _textFieldFocus,
-                    decoration: textFieldDecoration,
-                    controller: _textController,
-                    onSubmitted: (String value) {
-                      _sendChatMessage(value);
-                    },
-                  ),
-                ),
-                const SizedBox.square(
-                  dimension: 15,
-                ),
-                if (!_loading)
-                  IconButton(
-                    onPressed: () async {
-                      _sendChatMessage(_textController.text);
-                    },
-                    icon: Icon(
-                      Icons.send,
-                      color: Theme.of(context).colorScheme.primary,
+    return Scaffold(
+      body: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              child: _apiKey.isNotEmpty
+                  ? ListView.builder(
+                      controller: _scrollController,
+                      itemBuilder: (context, idx) {
+                        var content = _chat.history.toList()[idx];
+                        var text = content.parts
+                            .whereType<TextPart>()
+                            .map<String>((e) => e.text)
+                            .join('');
+                        return Message(
+                          text: text,
+                          isFromUser: content.role == 'user',
+                        );
+                      },
+                      itemCount: _chat.history.length,
+                    )
+                  : ListView(
+                      children: const [
+                        Text('No API key found. Please provide an API Key.'),
+                      ],
                     ),
-                  )
-                else
-                  const CircularProgressIndicator(),
-              ],
             ),
-          ),
-        ],
+            Padding(
+              padding: const EdgeInsets.symmetric(
+                vertical: 25,
+                horizontal: 15,
+              ),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      autofocus: true,
+                      focusNode: _textFieldFocus,
+                      decoration: textFieldDecoration,
+                      controller: _textController,
+                      onSubmitted: (String value) {
+                        _sendChatMessage(value);
+                      },
+                    ),
+                  ),
+                  const SizedBox.square(
+                    dimension: 15,
+                  ),
+                  if (!_loading)
+                    IconButton(
+                      onPressed: () async {
+                        _sendChatMessage(_textController.text);
+                      },
+                      icon: Icon(
+                        Icons.send,
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
+                    )
+                  else
+                    const CircularProgressIndicator(),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
